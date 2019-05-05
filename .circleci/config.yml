@@ -90,11 +90,11 @@ workflows:
       - github-release:
           requires:
             - build
-            filters:
-              branches:
-                ignore: /.*/
-              tags:
-                only: /^\d+\.\d+\.\d+$/
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^\d+\.\d+\.\d+$/
       - docker-publish:
           requires:
             - build
