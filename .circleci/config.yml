@@ -20,4 +20,4 @@ jobs:
           paths:
             - ~/.m2
           key: deps-{{ checksum "build.gradle.kts" }}
-      - run: gradle :cleanTest :test --tests *
+      - run: gradle test
