@@ -18,7 +18,7 @@ jobs:
           paths:
             - ~/.gradle
           key: deps-{{ checksum "build.gradle.kts" }}
-      - run: gradle test
+      - run: gradle build test shadowJar
       - store_artifacts:
           path: build/libs
       - persist_to_workspace:
