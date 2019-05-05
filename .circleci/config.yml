@@ -19,5 +19,5 @@ jobs:
       - save_cache: # saves the project dependencies
           paths:
             - ~/.m2
-          key: deps-{{ checksum ""build.gradle.kts" }}
-      - run: gradle test
+          key: deps-{{ checksum "build.gradle.kts" }}
+      - run: gradle :cleanTest :test --tests *
