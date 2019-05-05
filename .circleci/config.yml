@@ -92,7 +92,7 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /^\d+\.\d+$/
+              only: /^\d+\.\d+\.\d+$/
       - github-release:
           requires:
             - build
@@ -100,7 +100,7 @@ workflows:
             branches:
               only: master
             tags:
-              only: /^\d+\.\d+$/
+              only: /^\d+\.\d+\.\d+$/
       - docker-publish:
           requires:
             - build
@@ -108,4 +108,4 @@ workflows:
             branches:
               only: master
             tags:
-              only: /^\d+\.\d+$/
+              only: /^\d+\.\d+\.\d+$/
