@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 val kotlinVersion = "1.3.31"
 val http4kVersion = "3.140.0"
@@ -6,10 +7,12 @@ val http4kVersion = "3.140.0"
 plugins {
     kotlin("jvm") version "1.3.31"
     id("com.github.johnrengelman.shadow") version "5.0.0"
+    id("com.palantir.git-version") version "0.12.0-rc2"
 }
+val gitVersion: groovy.lang.Closure<*> by extra
 
 group = "com.batchofcode"
-version = "0.1-SNAPSHOT"
+version = gitVersion.call()
 val artifactId = "aws-lambda-runtime-local"
 
 repositories {
@@ -30,6 +33,10 @@ dependencies {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "11"
+}
+
+tasks.withType<ShadowJar> {
+    classifier = ""
 }
 
 val jar by tasks.getting(Jar::class) {

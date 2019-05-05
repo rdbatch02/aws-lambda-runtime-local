@@ -1,9 +1,7 @@
 version: 2
 jobs:
   build:
-
     working_directory: ~/aws-lambda-runtime-local
-
     docker:
       - image: circleci/openjdk:11-jdk
 
@@ -21,3 +19,87 @@ jobs:
             - ~/.gradle
           key: deps-{{ checksum "build.gradle.kts" }}
       - run: gradle test
+      - store_artifacts:
+          path: build/libs
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build/libs
+            - Dockerfile
+
+  github-release:
+    working_directory: ~/aws-lambda-runtime-local
+      docker:
+          - image: cibuilds/github:0.10
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} aws-lambda-runtime-local-$VERSION.jar
+
+  docker-publish:
+    working_directory: ~/aws-lambda-runtime-local
+      docker:
+          - image: docker:18.06.1-ce-git
+    steps:
+      - setup_remote_docker
+      - attach_workspace:
+          at: .
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }}
+          paths:
+            - /caches/aws-lambda-runtime-local.tar
+            - run:
+                name: Load Docker image layer cache
+                command: |
+                  set +o pipefail
+                  docker load -i /caches/aws-lambda-runtime-local.tar | true
+      - run:
+          name: Build application Docker image
+          command: |
+            docker build --cache-from=aws-lambda-runtime-local -t c1phr/aws-lambda-runtime-local .
+            - deploy:
+                name: Publish Docker Image to Docker Hub
+                command: |
+                  if [ "${CIRCLE_BRANCH}" == "master" ]; then
+                    echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
+                    IMAGE_TAG="${CIRCLE_TAG}"
+                    IMAGE_NAME="c1phr/aws-lambda-runtime-local"
+                    docker tag $IMAGE_NAME:latest $IMAGE_NAME:$IMAGE_TAG
+                    docker push $IMAGE_NAME:latest
+                    docker push $IMAGE_NAME:$IMAGE_TAG
+                  fi
+            - run:
+                name: Save Docker image layer cache
+                command: |
+                  mkdir -p /caches
+                  docker save -o /caches/aws-lambda-runtime-local.tar c1phr/aws-lambda-runtime-local
+            - save_cache:
+                key: v1-{{ .Branch }}-{{ epoch }}
+                paths:
+                  - /caches/aws-lambda-runtime-local.tar
+
+workflows:
+  version: 2
+  main:
+    jobs:
+      - build
+      - github-release:
+          requires:
+            - build
+            filters:
+              branches:
+                ignore: /.*/
+              tags:
+                only: /^\d+\.\d+\.\d+$/
+      - docker-publish:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^\d+\.\d+\.\d+$/
