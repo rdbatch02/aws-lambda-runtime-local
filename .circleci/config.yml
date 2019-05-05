@@ -37,7 +37,7 @@ jobs:
       - run:
           name: "Publish Release on GitHub"
           command: |
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} aws-lambda-runtime-local-$CIRCLE_TAG.jar
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} build/libs/aws-lambda-runtime-local-$CIRCLE_TAG.jar
 
   docker-publish:
     working_directory: ~/aws-lambda-runtime-local
