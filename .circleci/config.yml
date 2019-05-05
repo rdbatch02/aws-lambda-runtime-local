@@ -1,0 +1,23 @@
+version: 2
+jobs:
+  build:
+
+    working_directory: ~/aws-lambda-runtime-local
+
+    docker:
+      - image: circleci/openjdk:11-jdk
+
+    steps:
+
+      - checkout
+
+      - restore_cache:
+          key: deps-{{ checksum "build.gradle.kts" }}
+
+      - run: gradle dependencies
+
+      - save_cache: # saves the project dependencies
+          paths:
+            - ~/.m2
+          key: deps-{{ checksum ""build.gradle.kts" }}
+      - run: gradle test
