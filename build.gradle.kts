@@ -5,10 +5,12 @@ val http4kVersion = "3.140.0"
 
 plugins {
     kotlin("jvm") version "1.3.31"
+    id("com.github.johnrengelman.shadow") version "5.0.0"
 }
 
 group = "com.batchofcode"
-version = "1.0-SNAPSHOT"
+version = "0.1-SNAPSHOT"
+val artifactId = "aws-lambda-runtime-local"
 
 repositories {
     mavenCentral()
@@ -28,4 +30,10 @@ dependencies {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "11"
+}
+
+val jar by tasks.getting(Jar::class) {
+    manifest {
+        attributes["Main-Class"] = "com.batchofcode.runtimelocal.handler.RootHandlerKt"
+    }
 }
