@@ -62,7 +62,8 @@ class InvocationHandlerTest {
         val nextRequest = InvocationHandler()(Request(Method.GET, "/next"))
         val requestId = nextRequest.header("Lambda-Runtime-Aws-Request-Id")!!
 
-        val response = InvocationHandler(TestLogger)(Request(Method.POST, "/$requestId/response").body("{\"test\":\"test\"}"))
+        val response =
+            InvocationHandler(TestLogger)(Request(Method.POST, "/$requestId/response").body("{\"test\":\"test\"}"))
         assertThat(response, hasStatus(OK))
         assertEquals(0, PendingRequestQueue.pendingRequestCount())
     }
@@ -73,7 +74,8 @@ class InvocationHandlerTest {
         val nextRequest = InvocationHandler()(Request(Method.GET, "/next"))
         val requestId = nextRequest.header("Lambda-Runtime-Aws-Request-Id")!!
 
-        val response = InvocationHandler(TestLogger)(Request(Method.POST, "/$requestId/error").body("{\"error\":\"err message\"}"))
+        val response =
+            InvocationHandler(TestLogger)(Request(Method.POST, "/$requestId/error").body("{\"error\":\"err message\"}"))
         assertThat(response, hasStatus(OK))
         assertEquals(0, PendingRequestQueue.pendingRequestCount())
     }

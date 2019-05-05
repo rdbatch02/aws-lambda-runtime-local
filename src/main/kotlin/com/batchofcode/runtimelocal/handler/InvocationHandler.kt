@@ -34,7 +34,7 @@ object InvocationHandler {
         PendingRequestQueue.enqueueNewRequest(requestId)
         Response(OK).with(
             Header.required("Lambda-Runtime-Aws-Request-Id") of requestId,
-            Header.required("Lambda-Runtime-Deadline-Ms") of (System.currentTimeMillis() + 30*1000L).toString(), // 30s default timeout, possibly configurable in the future
+            Header.required("Lambda-Runtime-Deadline-Ms") of (System.currentTimeMillis() + 30 * 1000L).toString(), // 30s default timeout, possibly configurable in the future
             Header.required("Lambda-Runtime-Invoked-Function-Arn") of "arn:aws:lambda:us-east-2:123456789012:function:custom-runtime",
             Header.required("Lambda-Runtime-Trace-Id") of "Root=1-5bef4de7-ad49b0e87f6ef6c87fc2e700;Parent=9a9197af755a6419;Sampled=1",
             Header.required("Lambda-Runtime-Client-Context") of "",
@@ -55,8 +55,7 @@ object InvocationHandler {
             logger.log("Runtime responded to $requestId but Lambda did not have an active request with that ID")
             logger.log("--------------------------------------")
             Response(OK)
-        }
-        else {
+        } else {
             val totalTime = System.currentTimeMillis() - startTime
             logger.log("--------------------------------------")
             logger.log("Request $requestId completed in $totalTime ms")
@@ -79,8 +78,7 @@ object InvocationHandler {
             logger.log("Runtime responded to $requestId but Lambda did not have an active request with that ID")
             logger.log("--------------------------------------")
             Response(OK)
-        }
-        else {
+        } else {
             val totalTime = System.currentTimeMillis() - startTime
             logger.log("--------------------------------------")
             logger.log("REQUEST RETURNED AN ERROR!")

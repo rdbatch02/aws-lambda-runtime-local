@@ -2,7 +2,7 @@ package com.batchofcode.runtimelocal
 
 import com.batchofcode.runtimelocal.logging.Logger
 
-object TestLogger: Logger {
+object TestLogger : Logger {
     val loggedMessages = mutableListOf<String>()
 
     override fun log(message: String) {
