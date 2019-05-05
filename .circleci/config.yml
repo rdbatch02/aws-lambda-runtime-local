@@ -29,8 +29,8 @@ jobs:
 
   github-release:
     working_directory: ~/aws-lambda-runtime-local
-      docker:
-          - image: cibuilds/github:0.10
+    docker:
+        - image: cibuilds/github:0.10
     steps:
       - attach_workspace:
           at: .
@@ -41,8 +41,8 @@ jobs:
 
   docker-publish:
     working_directory: ~/aws-lambda-runtime-local
-      docker:
-          - image: docker:18.06.1-ce-git
+    docker:
+        - image: docker:18.06.1-ce-git
     steps:
       - setup_remote_docker
       - attach_workspace:
