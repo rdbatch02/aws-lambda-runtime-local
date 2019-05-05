@@ -84,9 +84,17 @@ jobs:
 
 workflows:
   version: 2
-  main:
+  build:
     jobs:
       - build
+  release:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^\d+\.\d+\.\d+$/
       - github-release:
           requires:
             - build
