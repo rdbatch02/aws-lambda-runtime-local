@@ -1,5 +1,9 @@
-package handler
+package com.batchofcode.runtimelocal.handler
 
+import com.batchofcode.runtimelocal.logging.Logger
+import com.batchofcode.runtimelocal.logging.PrintLogger
+import com.batchofcode.runtimelocal.queue.InvocationQueue
+import com.batchofcode.runtimelocal.queue.PendingRequestQueue
 import org.http4k.core.*
 import org.http4k.core.Status.Companion.BAD_REQUEST
 import org.http4k.core.Status.Companion.OK
@@ -10,12 +14,13 @@ import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
-import queue.InvocationQueue
-import queue.PendingRequestQueue
 import java.util.*
 
 object InvocationHandler {
-    operator fun invoke(): RoutingHttpHandler {
+    private lateinit var logger: Logger
+
+    operator fun invoke(logger: Logger = PrintLogger): RoutingHttpHandler {
+        this.logger = logger
         return routes(
             "/next" bind Method.GET to next(),
             "/{requestId}/response" bind Method.POST to response(),
@@ -23,7 +28,7 @@ object InvocationHandler {
         )
     }
 
-    private fun next(): HttpHandler = handler@{
+    fun next(): HttpHandler = handler@{
         val nextInvocation = InvocationQueue.getInvocation() ?: return@handler Response(OK)
         val requestId = UUID.randomUUID().toString()
         PendingRequestQueue.enqueueNewRequest(requestId)
@@ -38,7 +43,7 @@ object InvocationHandler {
         )
     }
 
-    private fun response(): HttpHandler = handler@{
+    fun response(): HttpHandler = handler@{
         val requestBody = Body.json().toLens()(it)
         val traceIdHeader = Header.optional("_X_AMZN_TRACE_ID")(it)
         val requestId = it.path("requestId") ?: return@handler Response(BAD_REQUEST).with(
@@ -46,23 +51,23 @@ object InvocationHandler {
         )
         val startTime = PendingRequestQueue.completeRequest(requestId)
         if (startTime == null) {
-            println("--------------------------------------")
-            println("Runtime responded to $requestId but Lambda did not have an active request with that ID")
-            println("--------------------------------------")
+            logger.log("--------------------------------------")
+            logger.log("Runtime responded to $requestId but Lambda did not have an active request with that ID")
+            logger.log("--------------------------------------")
             Response(OK)
         }
         else {
             val totalTime = System.currentTimeMillis() - startTime
-            println("--------------------------------------")
-            println("Request $requestId completed in $totalTime ms")
-            println("Body - $requestBody")
-            println("Trace ID Header - $traceIdHeader")
-            println("--------------------------------------")
+            logger.log("--------------------------------------")
+            logger.log("Request $requestId completed in $totalTime ms")
+            logger.log("Body - $requestBody")
+            logger.log("Trace ID Header - $traceIdHeader")
+            logger.log("--------------------------------------")
             Response(OK)
         }
     }
 
-    private fun error(): HttpHandler = handler@{
+    fun error(): HttpHandler = handler@{
         val requestBody = Body.json().toLens()(it)
         val traceIdHeader = Header.optional("_X_AMZN_TRACE_ID")(it)
         val requestId = it.path("requestId") ?: return@handler Response(BAD_REQUEST).with(
@@ -70,19 +75,19 @@ object InvocationHandler {
         )
         val startTime = PendingRequestQueue.completeRequest(requestId)
         if (startTime == null) {
-            println("--------------------------------------")
-            println("Runtime responded to $requestId but Lambda did not have an active request with that ID")
-            println("--------------------------------------")
+            logger.log("--------------------------------------")
+            logger.log("Runtime responded to $requestId but Lambda did not have an active request with that ID")
+            logger.log("--------------------------------------")
             Response(OK)
         }
         else {
             val totalTime = System.currentTimeMillis() - startTime
-            println("--------------------------------------")
-            println("REQUEST RETURNED AN ERROR!")
-            println("Request $requestId completed in $totalTime ms")
-            println("Error Body - $requestBody")
-            println("Trace ID Header - $traceIdHeader")
-            println("--------------------------------------")
+            logger.log("--------------------------------------")
+            logger.log("REQUEST RETURNED AN ERROR!")
+            logger.log("Request $requestId completed in $totalTime ms")
+            logger.log("Error Body - $requestBody")
+            logger.log("Trace ID Header - $traceIdHeader")
+            logger.log("--------------------------------------")
             Response(OK)
         }
 

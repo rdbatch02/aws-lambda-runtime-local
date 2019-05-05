@@ -1,5 +1,8 @@
-package handler
+package com.batchofcode.runtimelocal.handler
 
+import com.batchofcode.runtimelocal.logging.Logger
+import com.batchofcode.runtimelocal.logging.PrintLogger
+import com.batchofcode.runtimelocal.queue.InvocationQueue
 import org.http4k.core.Body
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method
@@ -9,16 +12,18 @@ import org.http4k.format.Jackson.json
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.routes
-import queue.InvocationQueue
 
 object EventHandler {
-    operator fun invoke(): RoutingHttpHandler {
+    private lateinit var logger: Logger
+
+    operator fun invoke(logger: Logger = PrintLogger): RoutingHttpHandler {
+        this.logger = logger
         return routes(
             "/next" bind Method.POST to addNextEvent()
         )
     }
 
-    private fun addNextEvent(): HttpHandler = handler@{
+    fun addNextEvent(): HttpHandler = handler@{
         val requestbody = Body.json().toLens()(it)
         InvocationQueue.enqueueNewInvocation(requestbody)
         Response(OK)

@@ -19,6 +19,11 @@ dependencies {
     compile(group = "org.http4k", name = "http4k-core", version = http4kVersion)
     compile(group = "org.http4k", name = "http4k-server-apache", version = http4kVersion)
     compile(group = "org.http4k", name = "http4k-format-jackson", version = http4kVersion)
+
+    testImplementation(kotlin("test"))
+    testImplementation(kotlin("test-junit"))
+    testImplementation("io.mockk:mockk:1.9.3")
+    testCompile(group = "org.http4k", name = "http4k-testing-hamkrest", version = http4kVersion)
 }
 
 tasks.withType<KotlinCompile> {

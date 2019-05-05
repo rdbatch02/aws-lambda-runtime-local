@@ -1,9 +1,13 @@
-package queue
+package com.batchofcode.runtimelocal.queue
 
 import com.fasterxml.jackson.databind.JsonNode
 
 object InvocationQueue {
     private val invocationRequests = mutableListOf<JsonNode>()
+
+    fun invocationCount(): Int = invocationRequests.size
+
+    fun clear() = invocationRequests.clear()
 
     fun enqueueNewInvocation(payload: JsonNode) {
         invocationRequests.add(payload)
