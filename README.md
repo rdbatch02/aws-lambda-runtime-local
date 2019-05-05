@@ -50,8 +50,8 @@ POST http://localhost:9000/2018-06-01/runtime/init/error
 In addition to an endpoint that allows you to stage request events for your runtime to invoke:
 
 ```text
-POST http://localhost:9000/events/next
+POST http://localhost:9000/event/next
 ```
 
-The runtime will serve events that have been POSTed to the `/events/next` endpoint sequentially each time the `/invocation/next` endpoint is called (or will return an empty response when there is no pending event). 
+The runtime will serve events that have been POSTed to the `/event/next` endpoint sequentially each time the `/invocation/next` endpoint is called (or will return an empty response when there is no pending event). 
 Invocation requests will include headers to emulate the Lambda Runtime interface as well, and expects that Request IDs are included with calls to `/response` and `/error` just as the Lambda service would.

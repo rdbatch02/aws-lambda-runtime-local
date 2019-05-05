@@ -21,5 +21,5 @@ fun main() {
     println("POST init error - http://localhost:$port/2018-06-01/runtime/init/error")
     println("-----------------------------------------------------------------------------------")
     println("Helper Endpoints:")
-    println("POST events - http://localhost:$port/events/next")
+    println("POST event - http://localhost:$port/event/next")
 }
