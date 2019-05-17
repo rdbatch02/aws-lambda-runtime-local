@@ -2,6 +2,7 @@ package com.batchofcode.runtimelocal.handler
 
 import com.batchofcode.runtimelocal.config.EnvConfig
 import org.http4k.core.then
+import org.http4k.filter.DebuggingFilters
 import org.http4k.filter.ServerFilters
 import org.http4k.server.ApacheServer
 import org.http4k.server.asServer
@@ -9,7 +10,13 @@ import org.http4k.server.asServer
 fun main() {
     val port = EnvConfig.port
 
-    ServerFilters.CatchAll()
+    var filterChain = ServerFilters.CatchAll()
+    if (EnvConfig.debug) {
+        println("REQUEST/RESPONSE DEBUG MODE ENABLED")
+        filterChain = filterChain.then(DebuggingFilters.PrintRequestAndResponse())
+    }
+
+    filterChain
         .then(Routes())
         .asServer(ApacheServer(port)).start()
 

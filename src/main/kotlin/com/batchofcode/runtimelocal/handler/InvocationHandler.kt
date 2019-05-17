@@ -9,6 +9,7 @@ import org.http4k.core.Status.Companion.BAD_REQUEST
 import org.http4k.core.Status.Companion.OK
 import org.http4k.format.Jackson.json
 import org.http4k.lens.Header
+import org.http4k.lens.LensFailure
 import org.http4k.lens.string
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
@@ -44,7 +45,12 @@ object InvocationHandler {
     }
 
     fun response(): HttpHandler = handler@{
-        val requestBody = Body.json().toLens()(it)
+        val requestBody = try {
+            Body.json().toLens()(it).toString()
+        }
+        catch (ex: LensFailure) {
+            Body.string(ContentType.TEXT_PLAIN).toLens()(it)
+        }
         val traceIdHeader = Header.optional("_X_AMZN_TRACE_ID")(it)
         val requestId = it.path("requestId") ?: return@handler Response(BAD_REQUEST).with(
             Body.string(ContentType.TEXT_PLAIN).toLens() of "Missing Request ID"
