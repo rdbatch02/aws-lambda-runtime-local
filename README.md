@@ -27,7 +27,7 @@ Run on alternate port
  Dockerhub Link: [https://hub.docker.com/r/c1phr/aws-lambda-runtime-local](https://hub.docker.com/r/c1phr/aws-lambda-runtime-local)
  
  ```bash
-docker run -p 9000:9000 c1phr/aws-lambda-runtime-local -p
+docker run -p 9000:9000 c1phr/aws-lambda-runtime-local
 ```
 
 Run on alternate port
