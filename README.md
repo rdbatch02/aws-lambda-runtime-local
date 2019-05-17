@@ -55,3 +55,12 @@ POST http://localhost:9000/event/next
 
 The runtime will serve events that have been POSTed to the `/event/next` endpoint sequentially each time the `/invocation/next` endpoint is called (or will return an empty response when there is no pending event). 
 Invocation requests will include headers to emulate the Lambda Runtime interface as well, and expects that Request IDs are included with calls to `/response` and `/error` just as the Lambda service would.
+
+## Environment Configuration
+
+The following configuration options can be set to modify the behavior of the local runtime. Either JVM arguments or environment variables can be used depending on the environment (JVM vs Docker).
+
+| Effect                            | JVM Argument       | Environment Variable |
+|-----------------------------------|--------------------|----------------------|
+| Set Runtime Port                  | runtime.port=8080  | RUNTIME_PORT=8080    |
+| Enable Request/Response Debugging | runtime.debug=true | RUNTIME_DEBUG=true   |
